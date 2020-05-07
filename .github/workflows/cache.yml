@@ -3,17 +3,28 @@ on:
 
 jobs:
   build:
+    # ubuntu 18.04 環境上で実行
     runs-on: ubuntu-18.04
+
+    # 以下でステップを走らせる
+    # - node@^10
+    # - node@^12
+    # - node@^13
     strategy:
       matrix:
         node-version: [10.x, 12.x, 13.x]
+
+    # 実行処理
     steps:
+      # Node.js の指定バージョンで使えるようにする
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
+      # コードを持ってくる
       - uses: actions/checkout@v2
 
+      # キャッシュがあれば復元
       - id: yarn-cache-dir
         run: echo "::set-output name=value::$(yarn cache dir)"
       - id: restore-keys
@@ -27,5 +38,5 @@ jobs:
           key: ${{ steps.restore-keys.outputs.value }}-${{ hashFiles('**/yarn.lock') }}-
           restore-keys: ${{ steps.restore-keys.outputs.value }}
 
+      # インストール
       - run: yarn
-
