@@ -1,0 +1,31 @@
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 13.x]
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - uses: actions/checkout@v2
+
+      - id: yarn-cache-dir
+        run: echo "::set-output name=value::$(yarn cache dir)"
+      - id: restore-keys
+        run: echo "::set-output name=value::${{ matrix.node-version }}"
+      - uses: actions/cache@v1
+        id: node-dependencies
+        env:
+          RESTORE_KEYS: v1-node-dependencies-${{ matrix.node-version }}-
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.value }}
+          key: ${{ steps.restore-keys.outputs.value }}-${{ hashFiles('**/yarn.lock') }}-
+          restore-keys: ${{ steps.restore-keys.outputs.value }}
+
+      - run: yarn
+
