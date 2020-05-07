@@ -28,14 +28,12 @@ jobs:
       - id: yarn-cache-dir
         run: echo "::set-output name=value::$(yarn cache dir)"
       - id: restore-keys
-        run: echo "::set-output name=value::${{ matrix.node-version }}"
+        run: echo "::set-output name=value::node-dependencies-${{ matrix.node-version }}-v1"
       - uses: actions/cache@v1
         id: node-dependencies
-        env:
-          RESTORE_KEYS: v1-node-dependencies-${{ matrix.node-version }}-
         with:
           path: ${{ steps.yarn-cache-dir.outputs.value }}
-          key: ${{ steps.restore-keys.outputs.value }}-${{ hashFiles('**/yarn.lock') }}-
+          key: ${{ steps.restore-keys.outputs.value }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ steps.restore-keys.outputs.value }}
 
       # インストール
